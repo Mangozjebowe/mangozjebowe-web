@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <!-- <link rel="stylesheet" href="mdb.min.css"> -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        <!-- <link rel="stylesheet" href="https://raw.githubusercontent.com/mdbootstrap/bootstrap-fluent-design/master/css/mdb.min.css"> -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.0.1/dist/css/bootstrap-dark.min.css"> -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+<!--         <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet"> -->
+        <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{odcinek.name}}</title>
+    <style type="text/css">
+        .cardwithplayer{
+            display: block;
+            overflow: auto;
+            height: 460px !important;
+            padding-bottom:20px;
+        }
+        @media screen and (max-width: 500px) {
+            .cardwithplayer{
+                height: auto !important;
+            }
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+            <div class="col-12 col-md-4 order-2 order-md-1">
+            <div class="card">
+                <div class="card-header">Odcinki</div>
+                <div class="card-body">
+                <ul class="list-group">
+                {%for i in listaodcinkow%}
+                            <li class="list-group-item"><a class="linkdoodcinkow" href="{{url_for('odcinek', odcid=i.id)}}">name: {{i.name}} - id: {{i.id}}</a></li>
+                        {%endfor%}
+                        </ul>
+                </div>
+                </div>
+                </div>
+                <div class="col-12 col-md-8 player order-1 order-md-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>{{odcinek.name}}</h5>
+                        </div>
+                        <div class="card-body clearfix cardwithplayer">
+                    <video id="video-id" playsinline="" class="player" webkit-playsinline="" controls="true">
+                        {% for i in klucze %}
+                        <source  src='{{linki[i]}}' title='{{i}}p' type='video/mp4' />
+                        {%endfor%}
+                    </video>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </body>
+
+
+<!-- Place before </body> tag -->
+<script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
+
+<script>
+    var myFP = fluidPlayer(
+        'video-id',	{
+	"layoutControls": {
+		"controlBar": {
+			"autoHideTimeout": 2,
+			"animated": true,
+			"autoHide": true
+		},
+		"htmlOnPauseBlock": {
+			"html": null,
+			"height": null,
+			"width": null
+		},
+		"autoPlay": false,
+		"mute": false,
+		"allowTheatre": true,
+		"playPauseAnimation": true,
+		"playbackRateEnabled": false,
+		"allowDownload": true,
+		"playButtonShowing": false,
+		"fillToContainer": true,
+		"posterImage": ""
+	},
+	"vastOptions": {
+		"adList": [],
+		"adCTAText": false,
+		"adCTATextPosition": ""
+	}
+}
+    )
+</script>
+
+</html>
