@@ -2,18 +2,15 @@
 from flask import render_template, Flask ,redirect, request, session as flasksession, url_for, abort, jsonify
 import flask
 import flask_monitoringdashboard as dashboard
-from flask_cors import CORS
 from sqlalchemy.sql.schema import ForeignKey
 app = Flask(__name__, static_folder='static')
 dashboard.config.init_from(file='config.cfg')
 dashboard.bind(app)
-CORS(app)
-app.secret_key = 'SECRET_KEY'
+app.secret_key = ''
 import requests
 import os
 from scraper import wbijam as scraperwbijam 
 users=list()
-import bcrypt
 import youtube_dl
 ydl_opts = {
     'quiet': True
@@ -28,6 +25,14 @@ import requests
 from bs4 import BeautifulSoup
 from soupsieve.css_match import RE_DATE
 Base = declarative_base()
+from datetime import timedelta
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=5)
+
+
 class Seria(Base):
     __tablename__="serie"
     id = Column(Integer, primary_key=True)
@@ -187,7 +192,7 @@ def login():
         nick=request.form["nick"]
         password=request.form["password"]
         urzyszkodnik=session.query(Users).order_by(Users.id).first()
-        if urzyszkodnik.name == nick and password == urzyszkodnik.password:
+        if urzyszkodnik.name in nick and password == urzyszkodnik.password:
             flasksession['user_id'] = urzyszkodnik.id
             success=True
         if success:
@@ -391,8 +396,10 @@ def dodajwbijam():
     else:
         abort(403)
 
-@app.route('/profile/<id>')
-def profilepage():
-    return render_template("profile.html")
+@app.route('/profile/<arg>')
+def profilepage(arg):
+    user = session.query(Users).filter(Users.name.like("%{}%".format(arg))).first()
+    return render_template('profile.html',
+        username = user.name)
 
 app.run(host="0.0.0.0")
