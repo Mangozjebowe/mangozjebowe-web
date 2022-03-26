@@ -1,67 +1,70 @@
-<html>
-<head>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
-  {%if logged[1]%}
-  <script>
-    var admin = true
-  </script>
-  {%endif%}
-</head>
-<body>
-  <div class="container">
-    <nav class="navbar sticky-top">
-      {%if not logged[0]%}
-      <a href="{{url_for('login')}}">Zaloguj się</a>
-      <a href="{{url_for('register')}}">Zarejestruj</a>
-      <input type="search" onchange="searchonclick()" id="search" class="form-control mr-sm-2 w-50" placeholder="Wpisz tytuł" name="fraza">
-      <button onclick="searchonclick()" id="searchonclick" style="width: 20%;" class="btn btn-primary">search</button>
-      {%else%}
-      <input type="search" onchange="searchonclick()" id="search" class="form-control mr-sm-2 w-75" placeholder="Wpisz tytuł" name="fraza">
-      <button onclick="searchonclick()" id="searchonclick" style="width: 20%;" class="btn btn-primary">search</button>
-      {%endif%}
-    </nav>
-    <div class="row">
-      {%if logged[0]%}
-      
-      <div class="row col-12 animebox minianimebox" id="pinned">
-        <div class="col-12"><center><h1>Przypięte anime</h1></center></div>
-      </div>
-      
-      {%endif%}
-      <div class="row col-12">
-      </div>
-      <div class="col-12 row animebox minianimebox" id="lastadded">
-        <div class="col-12"><center><h1>Ostatnio dodane anime</h1></center></div>
-        <div class="col-12 loading" style="margin-top: 20%;">
-          <center><h1>Czekaj czekaj ładuje się</h1></center>
-          <center><img style="height: 30%; margin: 10%;" src="https://animesher.com/orig/1/117/1176/11760/animesher.com_anime-boy-neon-genesis-evangelion-kaworu-nagisa-1176072.gif"></center>
-        </div>
-      </div>
-      
-      <div class="col-12 row animebox" id="wszystkieanime">
-        <div class="col-12">
-          <center><h1>Wszystkie serie</h1></center>
-          <center>
-            <nav aria-label="Nawigacja stron">
-              <ul class="pagination justify-content-center">
-              </ul>
-            </nav>
-          </center>
-        </div>
-        
-        <div class="col-12 loading">
-          <center><h1>Czekaj czekaj ładuje się</h1></center>
-          <center><img style="height: 30%; margin: 10%;" src="https://animesher.com/orig/1/117/1176/11760/animesher.com_anime-boy-neon-genesis-evangelion-kaworu-nagisa-1176072.gif"></center>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script src="{{url_for('static', filename='index.js')}}"></script>
-  {%if logged[0]%}
-  <script src="{{url_for('static', filename='loggeduser.js')}}"></script>
-  {%endif%}
-</body>
-</html>
+{% extends "layout.html" %}
+{%block header%}
+{% if logged %}
+{{user.name}}
+{%if logged and user.admin%}
+	<br>
+	Opcje administratorskie:
+	<a href="/add">Dodaj anime</a>
+	<a href="/manage/users">Zarządzaj użytkownikami</a>
+{%endif%}
+<br>
+{%else%}
+<a href="/login">Zaloguj się</a>
+{%endif%}
+
+{%endblock%}
+{%block content%}
+<div class="row">
+{% if not search %}
+{% if logged %}
+<div class="col-12">
+	<h3><a href="/pinned">Przypięte ></a></h3>
+</div>
+{% for i in pinned %}
+	<div class="col-4 col-md-2">
+		<a href="/anime/{{i.id}}">
+		<div class="card anime">
+			<div class="anime-card-title">
+				<h5>{{i.title}}</h5>
+			</div>
+			<img class="img-top" src="{{i.image_url}}">
+		</div>
+		</a>
+	</div>
+{% endfor %}
+{% endif %}
+<div class="col-12">
+	<h3>Ostatnio dodane</h3>
+</div>
+	<hr></hr>
+	{% for i in last_added %}
+	<div class="col-4 col-md-2">
+		<a href="/anime/{{i.id}}">
+	<div class="card anime">
+		<div class="anime-card-title">
+			<h5>{{i.title}}</h5>
+		</div>
+		<img class="img-top" src="{{i.image_url}}">
+		</div>
+	</a>
+	</div>
+	{% endfor %}
+<div class="col-12">
+	<h3>Wszystkie</h3>
+</div>
+{%endif%}
+{% for i in animes %}
+<div class="col-4 col-md-2">
+		<a href="/anime/{{i.id}}">
+	<div class="card anime">
+		<div class="anime-card-title">
+			<h5>{{i.title}}</h5>
+		</div>
+		<img class="img-top" src="{{i.image_url}}">
+	</div>
+</a>
+</div>
+{%endfor%}
+</div>
+{%endblock%}

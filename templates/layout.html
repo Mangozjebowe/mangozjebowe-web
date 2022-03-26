@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pl">
+	<head>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>Mangozjebowe</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="../static/style.css">
+		</head>
+	<body>
+		<nav class="navbar navbar-dark bg-inverse style="background-color: #e3f2fd;>
+		  <b style="margin-left: auto;margin-right: auto;"><a href='/'><h1 class="text-white">AnimOWO</h1></a></b>
+		  <form action="/" method="get" style="margin-left: auto;margin-right: auto; width: 70%;">
+		  	<input id='search' class='form-control' placeholder="wpisz tytuł" name='q' style="width: 100%;"></input>
+		  </form>
+		  <div class='w-100'>{%block header%}{%endblock%}</div>
+
+		</nav>
+		<div class="container">
+			{% with messages = get_flashed_messages() %}
+			  {% if messages %}
+			    <ul class=flashes>
+			    {% for message in messages %}
+			      <li>{{ message }}</li>
+			    {% endfor %}
+			    </ul>
+			  {% endif %}
+			{% endwith %}
+		{% block content %}{% endblock %}
+		</div>
+	</body>
+	<img src="http://toastytech.com/evil/ieisevil.gif">
+</html>

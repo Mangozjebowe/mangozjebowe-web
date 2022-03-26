@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{%block content%}
+<div class="row">
+  <div class="card col-12">
+    <form method="post" action='/add'>
+      <input class='w-100' type="text" name="link" placeholder="link">
+      <input class='w-100' type="text" name="title" placeholder="tytuł">
+      <button class='btn btn-primary' action="submit">dodaj</button>
+    </form>
+  </div>
+</div>
+{%endblock%}

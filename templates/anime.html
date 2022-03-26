@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{%block header%}
+<h2 style="text-align: center;">{{anime.title}}</h2>
+{% if logged %}
+<button class="btn btn-primary" id='pin'>{% if pinned %}odepnij{%else%}przypnij{%endif%}</button>
+<button class="btn btn-danger" id='delete'>{% if user.admin %}usuń{%else%}przypnij{%endif%}</button>
+{%endif%}
+{%endblock%}
+
+{%block content%}
+<div class="row">
+	<div class="col-12 animetitle">
+		<div class="row">
+		<div class="col-md-3 col-12 text-center">
+			<img class="center" src="{{anime.image_url}}">
+		</div>
+		<div class="col-md-9 col-12">
+			<span>{{anime.synopsis}}</span>
+			<div class="tags">
+				{% for i in anime.tags %}
+					<div class="badge badge-light badge-pill">
+							#{{i.tag}}
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	</div>
+		<div class="col-12">
+			<div class="row odcinki">
+			{%for i in anime.episodes%}
+				<div class="col-md-2 col-6 odcinek">
+			<a href="/episode/{{i.id}}">
+					<h4>
+						{{i.title}}
+					</h4>
+			</a>
+				</div>
+			{%endfor%}
+			</div>
+		</div>
+		<div class="col-12">
+			<div class="card card-body">
+			<h1>Komentarze</h1>
+			{% if logged %}
+			<br>
+			<h3>Dodaj komentarz</h3>
+			<form id='add_comment' method="POST">
+				<textarea name='text' class="w-100" placeholder="Treść komentarza"></textarea>
+				<button action='submit' class="w-25 btn btn-primary">Dodaj</button>
+			</form>
+			{% endif %}
+			{%for i in range(len)%}
+			<div class="card col-12">
+				<div class="card-header">
+					<h3>{{adders[i].name}}</h3>
+				</div>
+				<div class="card-body">
+					{{anime.comments[i].text}}
+				</div>
+			</div>
+			{%endfor%}
+			</div>
+		</div>
+</div>
+<script type="text/javascript">
+	{% if pinned %}
+	document.getElementById('pin').addEventListener('click', unpin);
+	{% else %}
+	document.getElementById('pin').addEventListener('click', pin);
+	{% endif %}
+
+	function pin() {
+		fetch('/pin/'+{{anime.id}})
+		this.innerHTML = "Odpenij"
+	}
+	function unpin() {
+		fetch('/unpin/'+{{anime.id}})
+		this.innerHTML = "Przypnij"
+	}
+		$('#add_comment').submit(function(e){
+		    e.preventDefault();
+		    $form = $('#add_comment')
+		    data = {
+		    	'text': $form.serializeArray()[0]['value']
+		    }
+			$.ajax({
+			  'type' : 'POST',
+			  'dataType' : 'json',
+			  'url' : '/addcomment/{{anime.id}}',
+			  'data': data,
+			  'success': function(data) {
+			  	null
+			  }
+			});
+		})
+	{% if user.admin %}
+	function remove(){
+		fetch('/delete/{{anime.id}}')
+		window.location.href= '/'
+	}
+	document.getElementById('delete').addEventListener('click', remove);
+	{% endif %}
+</script>
+{%endblock%}

@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{%block header%}<h2 style="text-align: center;">{{episode.title}}</h2>{%endblock%}
+{%block content%}
+<div class="row">
+	<div class="col-3 bg-dark">
+		{% for i in anime.episodes %}
+			<br>
+			<a href="/episode/{{i.id}}">
+				{{i.title}}
+			</a>
+		{% endfor %}	
+	</div>
+	<div class="col-7 text-center">
+		<iframe src="{{episode.url}}" style="border:none; height: 395px; width: 620px;" frameBorder="0" scrolling="no" allowfullscreen name="v2" allow="encrypted-media"></iframe>
+	</div>
+</div>
+{%endblock%}

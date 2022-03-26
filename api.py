@@ -1,131 +1,86 @@
 from __main__ import *
-@app.route("/api/series/search/<fraza>")
-def search_api(fraza):
-    response=list()
-    # name, opis, image_url, rate, orginalurl, autorid, airing
-    response = list()
-    tytuly=session.query(Seria).filter(Seria.name.like("%{}%".format(fraza))).all()
-    for i in tytuly:
-        response.append({
-            "title": i.name,
-            "image_url": i.image_url,
-            "id": i.id
-            })
-    return jsonify(response)
-
+@app.route('/api/series')
+def series():
+    return_series = list()
+    args = request.args.to_dict()
+    try:
+        args.pop('limit')
+        limit=request.args.get('limit')
+    except:
+        limit=200000
+    series = db.session.query(Anime).filter_by(**args).limit(limit)
+    for i in series:
+        return_series.append({
+            'title': i.title,
+            'image_url': i.image_url,
+            'airing': i.airing,
+            'planned_episodes': i.planned_episodes,
+            'score': i.score,
+            'synonyms': i.synonyms,
+            'tags': []
+        })
+        try:
+            [ return_series[len(return_series)-1]['tags'].append(j.tag) for j in i.tags ]
+        except:
+            return_series[len(return_series)-1]['tags'] = []
+    return(jsonify(return_series))
 @app.route("/api/series/id/<id>")
 def series_api(id):
-    response=dict()
-    epizodes=list()
-    odcinki = session.query(Odcinek).filter(Odcinek.seriaid == id)
-    seria=session.query(Seria).filter(Seria.id==id).first()
-    for i in odcinki:
-        epizodes.append(
-            {
-                "title":i.name,
-                "cda_url":i.cda_url
-            }
-        )
-
-    response={
-        "metadata":{
-            "title": seria.name,
-            "description": seria.opis,
-            "image_url": seria.image_url,
-            "airing": seria.airing,
-            "score": seria.rate,
-            "added_by": seria.autorid
-            },
-        "epizodes": epizodes
+    anime = db.session.query(Anime).filter(Anime.id==id).first()
+    episodes = []
+    comments = []
+    for i in anime.episodes:
+        episodes.append({
+            'id': i.id,
+            'url': i.url,
+            'title': i.title,
+            })
+    for i in anime.comments:
+        autor = db.session.query(User).filter(User.id==i.id).first()
+        comments.append({
+            'autor': autor.name,
+            'autorID': autor.id,
+            'add_date': i.add_date,
+            'text': i.text,
+            })
+    if anime is None:
+        return {}
+    else:
+        response = {
+            "mal_id": anime.mal_id,
+            "image_url": anime.image_url,
+            "airing": bool(anime.airing),
+            "type": anime.type,
+            "score": anime.score,
+            "add_date": anime.add_date,
+            "synonyms": anime.synonyms,
+            "orginal_url": anime.orginal_url,
+            "id": anime.id,
+            "sources": anime.sources,
+            "title": anime.title,
+            "synopsis": anime.synopsis,
+            "planned_episodes": anime.planned_episodes,
+            "added_by": db.session.query(User).filter(anime.added_by==User.id).first().name,
+            "rated": anime.rated,
+            "tags": [],
+            'episodes': episodes,
+            'comments': comments,
         }
-    return jsonify(response)
-@app.route("/api/series")
-def listallseries():
-    response={}
-    response["serie"]=list()
-    limit=request.args.get('limit')
-    offset=request.args.get('offset')
+        for i in anime.tags:
+            response['tags'].append(i.tag)
+        return(jsonify(response))
+@app.route('/api/tags/autocomplete')
+def autocomplete():
+    search = request.args.get('q')
+    limit = request.args.get('limit')
     if limit is None:
-        limit=30
-    if offset is None:
-        offset=0
-    ilosczmiennoprzecinkowa=len(session.query(Seria).all())/int(limit)
-    iloscstron=int(ilosczmiennoprzecinkowa)
-    if ilosczmiennoprzecinkowa > iloscstron: iloscstron+=1 
-    tytuly=session.query(Seria).order_by(Seria.name).offset(offset).limit(limit)
-    for i in tytuly:
-        response["serie"].append({
-            "title": i.name,
-            "image_url": i.image_url,
-            "id": i.id
-        })
-    response["pages"]=iloscstron
-    return(jsonify(response))
-@app.route('/api/series/lastadded')
-def lastadded():
-    response=list()
-    limit=request.args.get('limit')
-    serie=session.query(Seria).order_by(Seria.id.desc()).limit(limit)
-    for i in serie:
-        response.append({
-            "title": i.name,
-            "image_url": i.image_url,
-            "id": i.id
-        })
-    return jsonify(response)
-@app.route('/api/pinned')
-def lastwached():
-    response=list()
-    userid=flasksession["user_id"]
-    limit=request.args.get('limit')
-    serie=session.query(Pinned).filter(Pinned.user==flasksession["user_id"]).limit(limit)
-    print(serie)
-    for i in serie:
-        print("Seria  ",i.seria,"User  ",i.user)
-        seria=session.query(Seria).filter(Seria.id==i.seria).first()
-        print(seria)
-        response.append({
-            "title": seria.name,
-            "image_url": seria.image_url,
-            "id":seria.id
-        })
-    return(jsonify(response))
-
-@app.route('/api/comments')
-def commentsall():
-    response=list()
-    comments_list = session.query(Comment).filter_by(**request.args.to_dict()).all()
-    for i in comments_list:
-        # comments_var = session.query(Comment).filter(Comment.postid == i.postid).first()
-        response.append({
-            "comment_id": i.id,
-            "author_id": i.autorid,
-            "series_id": i.postid,
-            "content": i.tresc
-        })
-    return(jsonify(response))
-@app.route('/api/user/search/<arg>')
-def usersearch(arg):
-    response=list()
-    user_list = session.query(Users).filter(Users.name.like("%{}%".format(arg))).all()
-    for i in user_list:
-        user_var = session.query(Users).filter(Users.name == i.name).first()    
-        response.append({
-            "username": user_var.name,
-            "id": user_var.id
-        })
-    return(jsonify(response))
-
-@app.route('/api/series/episode/id/<arg>')
-def searchepisodebyid(arg):
-    response=list()
-    episode_list = session.query(Odcinek).filter(Odcinek.id == arg).all()
-    for i in episode_list:
-        episode_var = session.query(Odcinek).filter(Odcinek.name == i.name).first()
-        response.append({
-            "id": episode_var.id,
-            "series_id": episode_var.seriaid,
-            "name": episode_var.name,
-            "cda_url": episode_var.cda_url
-        })
-    return(jsonify(response))
+        limit = 100000
+    tags = db.session.query(Tag).filter(Tag.tag.like("%{}%".format(search))).order_by(Tag.id).limit(limit)
+    return_tags = []
+    for i in tags:
+        if not i.anime is None:
+            return_tags.append({
+                "text": i.tag,
+                "id": i.id,
+            })
+    return jsonify(return_tags)

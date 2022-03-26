@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{%block content%}
+<div class="row">
+{% for i in pinned %}
+	<div class="col-4 col-md-2">
+		<a href="/anime/{{i.id}}">
+		<div class="card anime">
+			<div class="anime-card-title">
+				<h5>{{i.title}}</h5>
+			</div>
+			<img class="img-top" src="{{i.image_url}}">
+		</div>
+		</a>
+	</div>
+{% endfor %}
+</div>
+{%endblock%}

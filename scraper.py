@@ -1,81 +1,34 @@
-returndicts = list()
+from __main__ import *
+enabled_plugins = ['cda', 'wbijam', 'desu']
+for i in enabled_plugins:
+	exec('from scrapery.'+i+' import '+i+'')
+import json
+# from scrapery.cda import cda
 import requests
-from bs4 import BeautifulSoup
-names=list()
-# mega vk sibnet cda vidlox mp4up
-player = 'cda'
-filename = "/dev/null"
-def get_episode_page_url(page):
-    soup = BeautifulSoup(page.content, 'html.parser')
-    links = []
-    for link in soup.find_all('table', class_='lista'):
-        for a in link.find_all('a', href=True):
-            names.append(a.get_text())
-            links.append(baseURL + a['href'])
-    links.reverse()
-    names.reverse()
-    # print(links)
-    return links
+animeDB = json.load(open('anime-offline-database.json','r',encoding='UTF-8'))['data']
 
-
-def get_player_page_url(links, player_name):
-    urls = []
-    if len(links) > 0 and player_name:
-        for link in links:
-            page = requests.get(link)
-            soup = BeautifulSoup(page.content, 'html.parser')
-            players = soup.find('table', class_='lista')
-            player = players.find('td', text=player_name)
-            # print(player)
-            if player is not None:
-                player = player.find_parent('tr')
-                playerURL = f"{baseURL}odtwarzacz-{player.find('span', class_='odtwarzacz_link')['rel']}.html"
-                urls.append(playerURL)
-        # print(urls)
-    return urls
-
-
-def get_player_url(links):
-    urls = []
-    if len(links) > 0:
-        for link in links:
-            page = requests.get(link)
-            soup = BeautifulSoup(page.content, 'html.parser')
-            urls.append(soup.find('iframe')['src'])
-    return urls
-
-
-def save_file(filename, links):
-    with open(filename, 'w') as file:
-        file.write('\n'.join(links))
-
-
-# episode_page_urls = get_episode_page_url(page)
-# player_page_urls = get_player_page_url(episode_page_urls, player)
-# players = get_player_url(player_page_urls)
-# save_file(filename, players)
-
-def wbijam(adres):
-    URL = adres
-    global baseURL
-    baseURL = f"{URL.split('wbijam.pl/', 1)[0]}wbijam.pl/"
-    page = requests.get(URL)
-    episode_page_urls = get_episode_page_url(page)
-    player_page_urls = get_player_page_url(episode_page_urls, player)
-    players = get_player_url(player_page_urls)
-    save_file(filename, players)
-    try:
-        returndicts.clear()
-        # episode_page_urls.clear()
-        # player_page_urls.clear()
-    except:
-        None
-    for i in range(len(players)):
-        returndicts.append({
-        "name": names[i],
-        "player": players[i]
-        })
-        print(names[i], players[i])
-
-    return returndicts
-# print(players)
+def getMetaData(title):
+	# print("TYTUŁ TYTUŁ TYTUŁ ",title)
+	responseDB = {}
+	for i in animeDB:
+		if title.upper() in i['title'].upper():
+			responseDB = i
+		else:
+			for j in i['synonyms']:
+				if title.upper() in j.upper():
+					responseDB = i
+	response = requests.get("https://api.jikan.moe/v3/search/anime?q="+str(title).replace(' ',"%20")).json()
+	print(response.keys())
+	response = response['results'][0]
+	responseDB.update(response)
+	# print(responseDB)
+	return(responseDB)
+def scrap(link, title):
+	for i in enabled_plugins:
+		if i in link:
+			# print("'"+link+"'")
+			episodes = eval((i+'('+'"'+link+'"'+')'))
+			return({
+				'Episodes': episodes,
+				'Metadata': getMetaData(title)
+			})
