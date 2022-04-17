@@ -11,13 +11,18 @@
 		</head>
 	<body>
 		<nav class="navbar navbar-dark bg-inverse style="background-color: #e3f2fd;>
-		  <b style="margin-left: auto;margin-right: auto;"><a href='/'><h1 class="text-white">AnimOWO</h1></a></b>
+		  <b style="margin-left: auto;margin-right: auto;"><a href='/'><h1 class="text-white">Mangozjebowe</h1></a></b>
 		  <form action="/" method="get" style="margin-left: auto;margin-right: auto; width: 70%;">
 		  	<input id='search' class='form-control' placeholder="wpisz tytuł" name='q' style="width: 100%;"></input>
 		  </form>
 		  <div class='w-100'>{%block header%}{%endblock%}</div>
 
 		</nav>
+		<div style="position: absolute;height: 100%; left: 60%;">
+		<div class="tapetka">
+			<img src="/static/nowydezajn.webp" height="700px">
+		</div>
+		</div>
 		<div class="container">
 			{% with messages = get_flashed_messages() %}
 			  {% if messages %}

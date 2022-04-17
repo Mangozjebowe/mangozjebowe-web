@@ -12,6 +12,7 @@ def series():
     for i in series:
         return_series.append({
             'title': i.title,
+            "id": i.id,
             'image_url': i.image_url,
             'airing': i.airing,
             'planned_episodes': i.planned_episodes,
