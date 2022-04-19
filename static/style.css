@@ -5,21 +5,24 @@ nav{
 	margin-top: 20px;
 }
 .anime-card-title{
-	opacity: 0%;
 	position: absolute;
-	height: 100%;
+    top: 80%;
+	height: 20%;
 	width: 100%;
-	text-align: center;
+	text-align: bottom center;
 	vertical-align: text-bottom;
 	color: white;
-}
-.anime-card-title:hover{
-	opacity: 100%;
-	background-color: #33333399;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px; 
+    background-color: #33333399;
+    backdrop-filter: blur(4px);
+    overflow: hidden;
+
 }
 .animetitle{
 	padding-top: 20px;
-	background-color: #22222290;
+    backdrop-filter: blur(4px);
+	background-color: #22222290 !important;
 }
 .odcinki{
 	margin-top: 20px;
@@ -55,7 +58,7 @@ display: flex;
 	background-color: #333;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
+/*@import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');*/
 
 .animebox{
     background-color: #33333399;
@@ -66,20 +69,22 @@ display: flex;
 body{
     background-color:#222;
     color: white;
-    font-family: 'Inconsolata', monospace;
+    font-family: sans-serif;
+/*    font-family: 'Inconsolata', monospace;*/
   /*-webkit-background-size: cover;*/
   /*-moz-background-size: cover;*/
   /*-o-background-size: cover;*/
   /*background-size: cover;*/
 }
 .card, .list-group-item{
-    background-color:#444 !important;
-    color:white !important;
 }
 .list-group-item a{
     color:white !important;
 }
-.anime * {
+.img-top{
+  border-radius: 10px;  
+}
+.anime {
     border-radius: 10px;
 }
 .anime {

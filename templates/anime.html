@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {%block header%}
-<h2 style="text-align: center;">{{anime.title}}</h2>
 {% if logged %}
 <button class="btn btn-primary" id='pin'>{% if pinned %}odepnij{%else%}przypnij{%endif%}</button>
 <button class="btn btn-danger" id='delete'>{% if user.admin %}usuń{%else%}przypnij{%endif%}</button>
@@ -9,7 +8,11 @@
 
 {%block content%}
 <div class="row">
-	<div class="col-12 animetitle">
+	<div class="col-12 animetitle card">
+	<div class="card-title">
+	    <h3>{{anime.title}}</h3>
+	</div>
+	<div class="card-body">
 		<div class="row">
 		<div class="col-md-3 col-12 text-center">
 			<img class="center" src="{{anime.image_url}}">
@@ -24,21 +27,21 @@
 				{% endfor %}
 			</div>
 		</div>
+        </div>
 	</div>
-	</div>
-		<div class="col-12">
-			<div class="row odcinki">
-			{%for i in anime.episodes%}
-				<div class="col-md-2 col-6 odcinek">
+          <br/>
+           <ul class="list-group">
+            {%for i in anime.episodes%}
+            <li class="list-group-item">
 			<a href="/episode/{{i.id}}">
 					<h4>
 						{{i.title}}
 					</h4>
 			</a>
-				</div>
+            </li>
 			{%endfor%}
-			</div>
-		</div>
+			</ul>
+    </div>
 		<div class="col-12">
 			<div class="card card-body">
 			<h1>Komentarze</h1>

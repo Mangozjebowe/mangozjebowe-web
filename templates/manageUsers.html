@@ -1,30 +1,37 @@
 {% extends "layout.html" %}
+{%block stopastolfo%}{%endblock%}
 {%block header%}
 <center><h3>Zarządzanie użytkownikami</h3></center>
 {% endblock %}
 {%block content%}
 <div class="row">
-{% for i in users  %}
-<div class="col-12 user" id="user-{{i.id}}">
-  <div class="row">
-  
-    <div class="col-10 card card-body">
-      <b>{{i.name}}</b>
-        {% if i.admin %}
-        <div class="w-25 badge badge-primary">
-        admin
-        </div>
-        {% endif %}
-    </div>
-    {% if not i.admin %}
-    <button onclick="deleteUser({{i.id}})" class="btn btn-danger col-1 delete">Usuń</button>
-    <button onclick="promoteUser({{i.id}})" class="btn btn-primary col-1 delete">Awansuj</button>
-    {%else%}
-    <button data='{{i.id}}' class="btn-secondary col-1 delete">Usuń (Nie możliwe)</button>
-    {% endif %}
-  </div>
-</div>
-{%endfor%}
+<table class="table-bordered">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Admin</th>
+            <th width="20%"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in users  %}
+           <tr>
+                <td>
+                    {{i.name}}
+                </td>
+                <td>
+                    {{i.admin}}
+                </td>
+                <td>
+               {% if not i.admin %}
+                    <button class="btn" onclick="deleteUser({{i.id}})">usuń</button>
+                    <button class="btn" onclick="promoteUser({{i.id}})">Promuj</button>
+                {%endif%}
+                </td>
+           </tr>
+        {%endfor%}
+    </tbody>
+</table>
 </div>
 <script type="text/javascript" src="/static/admin.js"></script>
 {%endblock%}
